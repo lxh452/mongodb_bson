@@ -2,12 +2,18 @@ module refeject_bson
 
 go 1.24.3
 
-require go.mongodb.org/mongo-driver v1.17.4
+require (
+	git.jsyiot.com/jsytech/lego-lib v0.6.3
+	git.jsyiot.com/jsytech/mongo-filter-builder v0.0.22
+	go.mongodb.org/mongo-driver v1.17.4
+)
 
 require (
 	github.com/golang/snappy v0.0.4 // indirect
+	github.com/iancoleman/strcase v0.2.0 // indirect
 	github.com/klauspost/compress v1.16.7 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
+	github.com/qiniu/qmgo v1.1.4 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
