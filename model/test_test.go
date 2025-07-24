@@ -2,7 +2,7 @@ package model
 
 import (
 	"fmt"
-	builder "refeject_bson/jsy_builder"
+	builder "refeject_bson/builder"
 	"testing"
 )
 

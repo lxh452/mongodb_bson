@@ -26,7 +26,3 @@ func (condBuild *CondBuild) New() *CondBuild {
 		curMap:   bson.M{},
 	}
 }
-
-func (condBuild *CondBuild) Add() *CondBuild {
-
-}
