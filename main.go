@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 	"git.jsyiot.com/jsytech/lego-lib/xbson/agop"
-	builder "git.jsyiot.com/jsytech/mongo-filter-builder"
 	"go.mongodb.org/mongo-driver/bson"
+	"refeject_bson/bsonStruct"
 	"refeject_bson/data"
+	builder "refeject_bson/jsy_builder"
 	"refeject_bson/model"
-	"refeject_bson/utils"
 )
 
 func main() {
@@ -19,15 +19,13 @@ func main() {
 	user = user.NewUser()
 
 	customer = customer.NewCustomer()
-	bsonM := utils.NewStructIntoBsonM()
+	bsonM := bsonStruct.New()
 	//构建分组条件
 	userBsonM := bsonM.Change(user, "$user.")
 	customerBsonM := bsonM.Change(customer, "$customer.")
 
 	// 构建显示条件
 	project := bsonM.MergerIntoBsonM(userBsonM.Project, customerBsonM.Project)
-	fmt.Println(project)
-	fmt.Println(userBsonM.Group)
 
 	filter := builder.New()
 	filter.Str("address.city").Eq("广州1")
