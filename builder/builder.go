@@ -241,19 +241,68 @@ func (b *Builder) Build() bson.M {
 	return res
 }
 
-func (b *Builder) IsAdd(value any, conds, key string) *Builder {
-	val := reflect.ValueOf(value)
+func (b *Builder) IsIntAdd() {
 
+}
+
+func (b *Builder) IsFloatAdd() {
+
+}
+
+func (b *Builder) IsStringAdd() {
+
+}
+
+func (b *Builder) IsArrayDateAdd(cond, key string, value []string) {
+	if len(value) == 2 {
+		b.Date(key).BetweenStr(value[0], value[1])
+	}
+	switch cond {
+	case "nin":
+		b.Str(key).Nin(value...)
+	case "in":
+		b.Str(key).In(value...)
+	}
+
+}
+
+func (b *Builder) IsAdd(value any, cond, key string) *Builder {
+	val := reflect.ValueOf(value)
 	switch val.Kind() {
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		return b.isAddNum(value.(int), conds, key)
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Float32, reflect.Float64:
+		{
+			if !val.IsZero() {
+				return b.isAddNum(value.(int), cond, key)
+			}
+		}
 	case reflect.String:
-		return b.isAddNum(value.(string), conds, key)
+		{
+			if !val.IsZero() {
+				return b.isAddStr(value.(string), cond, key)
+			}
+		}
+
+	case reflect.Slice, reflect.Array:
+		{
+			if !val.IsNil() {
+				return b.isAddSlice(value, cond, key)
+			}
+		}
+	case reflect.Pointer:
+		if !val.IsNil() {
+
+		}
+		b.IsAdd(&value, cond, key)
 
 	default:
 	}
 	return b
 }
+
+type Request struct {
+	Num *int
+}
+
 func (b *Builder) isAddNum(value any, conds, key string) *Builder {
 	switch conds {
 	case "eq":
@@ -292,7 +341,37 @@ func (b *Builder) isAddStr(value any, conds, key string) *Builder {
 		return b.Str(key).In(val)
 	case "like":
 		return b.Str(key).Like(val)
+	case "not":
+		return b.Str(key).Not(val)
+	case "notLike":
+		return b.Str(key).NotLike(val)
 	default:
 	}
+	return b
+}
+
+func (b *Builder) isAddSlice(value interface{}, conds, key string) *Builder {
+	switch value.(type) {
+	case []string:
+		{
+			val := value.([]string)
+			switch conds {
+			case "nin":
+				return b.Str(key).Nin(val...)
+			case "in":
+				return b.Str(key).In(val...)
+			}
+		}
+	case []int:
+		{
+			val := value.([]int)
+			if conds == "between" && len(val) == 2 && val[0] < val[1] {
+				return b.Num(key).Between(val[0], val[1])
+			} else if conds == "in" {
+				return b.Num(key).In(val)
+			}
+		}
+	}
+
 	return b
 }
